@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { matchProjects } from './matchProjects'
 
 type QuizAnswers = {
   projectTypes: string[]
@@ -49,12 +50,18 @@ export default function QuizQuestionsPage() {
     return false
   }
 
-  const handleNext = () => {
+const handleNext = async () => {
     if (currentQuestion < 3) {
       setCurrentQuestion(prev => prev + 1)
     } else {
-      // Navigate to results page (we'll build this next)
-      console.log('Quiz answers:', answers)
+      // Get matched projects
+      const matches = await matchProjects(answers)
+      console.log('Matched projects:', matches)
+      
+      // For now, just show count - we'll build results page next
+      alert(`Found ${matches.length} matching projects!`)
+      
+      // TODO: Navigate to results page
       // router.push('/quiz/results')
     }
   }
