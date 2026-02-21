@@ -18,15 +18,12 @@ export async function matchProjects(answers: QuizAnswers) {
     return []
   }
 
+  console.log('Total projects in database:', projects.length)
+  console.log('Quiz answers:', answers)
+
   // Filter projects based on quiz answers
   let filteredProjects = projects.filter(project => {
-    // 1. Check if project uses the selected die (if die was selected)
-    if (answers.selectedDieId) {
-      // Assuming project_dies table links projects to dies
-      // We'll need to fetch this separately or join it
-      // For now, we'll skip this filter until we set up the join
-    }
-
+    
     // 2. Filter by project type
     if (answers.projectTypes.length > 0 && !answers.projectTypes.includes('surprise')) {
       // Map quiz answers to database categories
@@ -41,9 +38,12 @@ export async function matchProjects(answers: QuizAnswers) {
       const selectedCategories = answers.projectTypes.map(type => categoryMap[type]).filter(Boolean)
       
       if (selectedCategories.length > 0) {
-        // Check if project category matches any selected category
-        const projectCategory = project.category
-        if (!selectedCategories.includes(projectCategory)) {
+        // Check if project category array includes any selected category
+        const projectCategories = project.category || []
+        const hasMatchingCategory = selectedCategories.some(cat => projectCategories.includes(cat))
+        
+        if (!hasMatchingCategory) {
+          console.log(`Project "${project.title}" filtered out - category mismatch`)
           return false
         }
       }
@@ -52,6 +52,7 @@ export async function matchProjects(answers: QuizAnswers) {
     // 3. Filter by stash buster
     if (answers.mood === 'stash-buster') {
       if (!project.is_stash_buster) {
+        console.log(`Project "${project.title}" filtered out - not stash buster`)
         return false
       }
     }
@@ -60,11 +61,13 @@ export async function matchProjects(answers: QuizAnswers) {
     if (answers.mood === 'quick') {
       // Show only 4-6 hour projects
       if (!project.time_estimate?.includes('4-6')) {
+        console.log(`Project "${project.title}" filtered out - time estimate doesn't match quick (${project.time_estimate})`)
         return false
       }
     } else if (answers.mood === 'take-time') {
       // Show 8-12 or 16-20 hour projects
       if (!project.time_estimate?.includes('8-12') && !project.time_estimate?.includes('16-20')) {
+        console.log(`Project "${project.title}" filtered out - time estimate doesn't match take-time`)
         return false
       }
     }
@@ -81,7 +84,7 @@ export async function matchProjects(answers: QuizAnswers) {
       const userMachines = answers.machines.map(m => machineMap[m]).filter(Boolean)
       
       // Check if user has all required machines for this project
-      const requiredMachines = project.machines_required?.split(',').map((m: string) => m.trim()) || []
+      const requiredMachines = project.machines_required || []
       
       // User must have ALL machines that the project requires
       const hasAllMachines = requiredMachines.every((reqMachine: string) => 
@@ -89,12 +92,15 @@ export async function matchProjects(answers: QuizAnswers) {
       )
       
       if (!hasAllMachines) {
+        console.log(`Project "${project.title}" filtered out - missing machines. Needs: ${requiredMachines.join(', ')}, Has: ${userMachines.join(', ')}`)
         return false
       }
     }
 
+    console.log(`Project "${project.title}" PASSED all filters!`)
     return true
   })
 
+  console.log(`Filtered projects: ${filteredProjects.length}`)
   return filteredProjects
 }
