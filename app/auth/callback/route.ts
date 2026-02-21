@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
@@ -9,40 +9,26 @@ export async function GET(request: Request) {
   if (code) {
     const cookieStore = await cookies()
     
-    const supabase = createClient(
+    const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
-        auth: {
-          flowType: 'pkce'
-        }
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+          set(name: string, value: string, options: any) {
+            cookieStore.set(name, value, options)
+          },
+          remove(name: string, options: any) {
+            cookieStore.delete(name)
+          },
+        },
       }
     )
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    
-    if (!error) {
-      // Get the session
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (session) {
-        // Set auth cookies
-        cookieStore.set('sb-access-token', session.access_token, {
-          path: '/',
-          secure: true,
-          sameSite: 'lax',
-          maxAge: 60 * 60 * 24 * 7 // 7 days
-        })
-        cookieStore.set('sb-refresh-token', session.refresh_token, {
-          path: '/',
-          secure: true,
-          sameSite: 'lax',
-          maxAge: 60 * 60 * 24 * 7 // 7 days
-        })
-      }
-    }
+    await supabase.auth.exchangeCodeForSession(code)
   }
 
-  // Redirect to quiz page
   return NextResponse.redirect(`${requestUrl.origin}/quiz`)
 }
