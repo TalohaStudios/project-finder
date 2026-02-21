@@ -12,6 +12,7 @@ interface Die {
   code: string
 }
 
+const DIE_REQUEST_EMAIL = "mailto:hello@talohastudios.com?subject=Die%20Request%20-%20Die%20Project%20Finder&body=Hi!%20I'd%20like%20to%20request%20this%20die:%0A%0ADie%20Name:%20%0ADie%20Code:%20%0A%0AThanks!"
 
 export default function DieSelector({
   onSelect,
@@ -158,18 +159,32 @@ useEffect(() => {
             </div>
             <div className="flex flex-col gap-1.5">
               <p className="text-sm font-medium text-foreground">
-                No dies found
+                No dies found for "{search}"
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
                 {"Try searching by name (e.g. 'strip') or code (e.g. '55018')"}
               </p>
             </div>
+            
+            {/* Die Request CTA */}
+            <div className="bg-accent/50 border border-border rounded-lg p-4 max-w-md mt-2">
+              <p className="text-sm font-medium mb-2">Can't find your die?</p>
+              <a 
+                href={DIE_REQUEST_EMAIL}
+                className="text-primary hover:underline font-medium text-sm inline-flex items-center gap-1"
+              >
+                → Request it and I'll add it within 1-2 business days!
+              </a>
+            </div>
+
             <Button
               variant="outline"
               size="sm"
               onClick={handleClearSearch}
               className="mt-1 bg-transparent"
             >
+              Clear Search
+            </Button>
               Clear Search
             </Button>
           </div>
