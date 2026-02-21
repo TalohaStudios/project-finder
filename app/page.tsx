@@ -46,7 +46,7 @@ function SignUpForm() {
     const { error: authError } = await supabase.auth.signInWithOtp({
   email: email,
   options: {
-    emailRedirectTo: `${window.location.origin}/quiz`,
+  emailRedirectTo: `${window.location.origin}/auth/callback`,
   },
 })
 
@@ -175,7 +175,7 @@ function LogInForm() {
     const { error: authError } = await supabase.auth.signInWithOtp({
   email: email,
   options: {
-    emailRedirectTo: `${window.location.origin}/quiz`,
+  emailRedirectTo: `${window.location.origin}/auth/callback`,
   },
 })
 
