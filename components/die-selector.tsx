@@ -123,7 +123,8 @@ useEffect(() => {
         aria-label="Die options"
       >
         {filteredDies.length > 0 ? (
-          filteredDies.map((die) => {
+        <>
+            {filteredDies.map((die) => {
             const isSelected = selectedDie?.code === die.code
             return (
               <button
@@ -151,7 +152,18 @@ useEffect(() => {
                 )}
               </button>
             )
-          })
+          })}
+          {/* Persistent footer link */}
+          <div className="sticky bottom-0 bg-card/95 backdrop-blur border-t border-border px-4 py-2.5 text-center text-xs text-muted-foreground">
+            {filteredDies.length} dies •{" "}
+            <a 
+              href={DIE_REQUEST_EMAIL}
+              className="text-primary hover:underline font-medium"
+            >
+              Missing a die? Request it
+            </a>
+          </div>
+          </>
         ) : (
           <div className="flex flex-col items-center gap-4 px-6 py-10 text-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
@@ -184,8 +196,7 @@ useEffect(() => {
               className="mt-1 bg-transparent"
             >
               Clear Search
-            </Button>
-              Clear Search
+          
             </Button>
           </div>
         )}
