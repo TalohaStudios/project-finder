@@ -5,6 +5,7 @@ import { useState, useRef, useEffect, useMemo } from "react"
 import { Search, X, Check } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { useRouter } from 'next/navigation'
 
 interface Die {
   id: number
@@ -19,10 +20,11 @@ export default function DieSelector({
 }: {
   onSelect?: (die: Die | null) => void
 }) {
+  const router = useRouter()
   const [search, setSearch] = useState("")
   const [selectedDie, setSelectedDie] = useState<Die | null>(null)
   const [dies, setDies] = useState<Die[]>([])
-const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true)
 useEffect(() => {
   async function fetchDies() {
     setIsLoading(true)
@@ -201,6 +203,19 @@ useEffect(() => {
           </div>
         )}
       </div>
+      {/* Continue button - shows when die is selected */}
+      {selectedDie && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+          <Button
+            onClick={() => router.push('/quiz/questions')}
+            size="lg"
+            className="shadow-lg gap-2"
+          >
+            Continue with {selectedDie.name}
+            <Check className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
