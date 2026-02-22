@@ -50,7 +50,7 @@ export default function QuizQuestionsPage() {
     return false
   }
 
-const handleNext = async () => {
+  const handleNext = async () => {
     if (currentQuestion < 3) {
       setCurrentQuestion(prev => prev + 1)
     } else {
@@ -58,11 +58,11 @@ const handleNext = async () => {
       const matches = await matchProjects(answers)
       console.log('Matched projects:', matches)
       
-      // For now, just show count - we'll build results page next
-      alert(`Found ${matches.length} matching projects!`)
+      // Navigate to results page with data
+      const answersParam = encodeURIComponent(JSON.stringify(answers))
+      const projectsParam = encodeURIComponent(JSON.stringify(matches))
       
-      // TODO: Navigate to results page
-      // router.push('/quiz/results')
+      router.push(`/quiz/results?answers=${answersParam}&projects=${projectsParam}`)
     }
   }
 
