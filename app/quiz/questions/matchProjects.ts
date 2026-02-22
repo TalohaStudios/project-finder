@@ -38,11 +38,11 @@ export async function matchProjects(answers: QuizAnswers) {
       const selectedCategories = answers.projectTypes.map(type => categoryMap[type]).filter(Boolean)
       
       console.log('Selected categories from quiz:', selectedCategories)
-      console.log(`Project "${project.title}" has categories:`, project.category, 'Type:', typeof project.category)
+      console.log(`Project "${project.title}" has categories:`, project.categories, 'Type:', typeof project.categories)
       
       if (selectedCategories.length > 0) {
         // Check if project category array includes any selected category
-        const projectCategories = Array.isArray(project.category) ? project.category : []
+        const projectCategories = Array.isArray(project.categories) ? project.categories : []
         
         console.log(`Checking if ${JSON.stringify(projectCategories)} includes any of ${JSON.stringify(selectedCategories)}`)
         
