@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Share2, Mail, ArrowLeft } from 'lucide-react'
@@ -23,7 +23,8 @@ type CrafterType = {
   emoji: string
 }
 
-export default function ResultsPage() {
+
+function ResultsPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [projects, setProjects] = useState<Project[]>([])
@@ -255,10 +256,23 @@ export default function ResultsPage() {
             variant="outline"
             onClick={() => router.push('/quiz')}
           >
-            Start Over
+Start Over
           </Button>
         </div>
       </div>
     </div>
+  )
+}
+
+// Wrap in Suspense boundary
+export default function ResultsPageWrapper() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <ResultsPage />
+    </Suspense>
   )
 }
