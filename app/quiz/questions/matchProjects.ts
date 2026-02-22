@@ -24,7 +24,7 @@ export async function matchProjects(answers: QuizAnswers) {
   // Filter projects based on quiz answers
   let filteredProjects = projects.filter(project => {
     
-    // 2. Filter by project type
+      // 2. Filter by project type
     if (answers.projectTypes.length > 0 && !answers.projectTypes.includes('surprise')) {
       // Map quiz answers to database categories
       const categoryMap: { [key: string]: string } = {
@@ -37,10 +37,18 @@ export async function matchProjects(answers: QuizAnswers) {
       
       const selectedCategories = answers.projectTypes.map(type => categoryMap[type]).filter(Boolean)
       
+      console.log('Selected categories from quiz:', selectedCategories)
+      console.log(`Project "${project.title}" has categories:`, project.category, 'Type:', typeof project.category)
+      
       if (selectedCategories.length > 0) {
         // Check if project category array includes any selected category
-        const projectCategories = project.category || []
+        const projectCategories = Array.isArray(project.category) ? project.category : []
+        
+        console.log(`Checking if ${JSON.stringify(projectCategories)} includes any of ${JSON.stringify(selectedCategories)}`)
+        
         const hasMatchingCategory = selectedCategories.some(cat => projectCategories.includes(cat))
+        
+        console.log(`Has matching category: ${hasMatchingCategory}`)
         
         if (!hasMatchingCategory) {
           console.log(`Project "${project.title}" filtered out - category mismatch`)
