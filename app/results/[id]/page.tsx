@@ -201,17 +201,7 @@ export default function SavedResultsPage() {
                         </a>
                       </Button>
                     )}
-                    {project.notion_instructions_link && (
-                      <Button
-                        asChild
-                        variant="outline"
-                        size="sm"
-                      >
-                      <a href={project.notion_instructions_link} target="_blank" rel="noopener noreferrer">
-                          Instructions
-                        </a>
-                      </Button>
-                    )}
+                
                   </div>
                 </div>
               </div>
