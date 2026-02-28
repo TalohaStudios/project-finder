@@ -71,13 +71,13 @@ function ResultsPage() {
       }
     } else if (answers.mood === 'quick') {
       return {
-        title: 'Quick Win Queen',
+        title:'Speed Crafter' ,
         emoji: '⚡',
         description: "You love the satisfaction of finishing projects fast! Quick, beautiful, and rewarding - that's your crafting style."
       }
     } else if (answers.mood === 'take-time') {
       return {
-        title: 'Patient Perfectionist',
+        title: 'Masterpiece Maker',
         emoji: '🎨',
         description: "You appreciate the journey as much as the destination. Your projects are labors of love worth every stitch!"
       }
