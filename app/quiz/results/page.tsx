@@ -13,6 +13,7 @@ type Project = {
   skill_level: string
   machines_required: string[]
   is_stash_buster: boolean
+  image_url?: string
   accuquilt_pattern_url?: string
   notion_instructions_url?: string
 }
@@ -158,9 +159,19 @@ function ResultsPage() {
                 className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow"
               >
                 <div className="flex flex-col md:flex-row gap-6">
-                  {/* Project placeholder image */}
-                  <div className="w-full md:w-48 h-48 bg-muted rounded-lg flex items-center justify-center shrink-0">
-                    <span className="text-4xl">🎨</span>
+                 {/* Project image */}
+                  <div className="w-full md:w-48 h-48 bg-muted rounded-lg overflow-hidden shrink-0">
+                    {project.image_url ? (
+                      <img 
+                        src={project.image_url} 
+                        alt={project.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-4xl">🎨</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Project details */}
