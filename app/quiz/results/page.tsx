@@ -31,6 +31,10 @@ function ResultsPage() {
   const [projects, setProjects] = useState<Project[]>([])
   const [crafterType, setCrafterType] = useState<CrafterType | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [email, setEmail] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [emailSuccess, setEmailSuccess] = useState(false)
 
   useEffect(() => {
     // Get quiz answers from URL params
@@ -103,6 +107,43 @@ function ResultsPage() {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(text + ' https://dieprojectfinder.com')
       alert('Link copied to clipboard!')
+    }
+  }
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+
+    try {
+      // Determine tags based on answers
+      const tags = []
+      if (crafterType) {
+        const typeTag = crafterType.title.toLowerCase().replace(/\s+/g, '-')
+        tags.push(typeTag)
+      }
+
+      const response = await fetch('/api/kit/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          firstName,
+          tags,
+          answers: searchParams.get('answers')
+        })
+      })
+
+      if (response.ok) {
+        setEmailSuccess(true)
+        setEmail('')
+        setFirstName('')
+      } else {
+        alert('Failed to save email. Please try again.')
+      }
+    } catch (error) {
+      console.error('Email submit error:', error)
+      alert('Failed to save email. Please try again.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -241,23 +282,63 @@ function ResultsPage() {
           </div>
         )}
 
-        {/* Share Section */}
+       {/* Email Capture Section */}
         {projects.length > 0 && (
-          <div className="bg-card border border-border rounded-lg p-6 text-center">
-            <h3 className="font-bold mb-2">Love your matches?</h3>
-            <p className="text-muted-foreground mb-4">
-              Share Die Project Finder with your crafting friends!
-            </p>
-            <div className="flex gap-3 justify-center">
-              <Button onClick={handleShare} className="gap-2">
-                <Share2 className="h-4 w-4" />
-                Share Results
-              </Button>
-              <Button variant="outline" className="gap-2">
-                <Mail className="h-4 w-4" />
-                Email Me My Matches
-              </Button>
-            </div>
+          <div className="bg-card border border-border rounded-lg p-6">
+            {!emailSuccess ? (
+              <>
+                <h3 className="font-bold text-center mb-2">Want these results emailed to you?</h3>
+                <p className="text-muted-foreground text-center mb-6">
+                  Get your personalized project matches delivered to your inbox!
+                </p>
+                
+                <form onSubmit={handleEmailSubmit} className="max-w-md mx-auto space-y-4">
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="First Name (optional)"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="email"
+                      placeholder="Your Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+                  <Button 
+                    type="submit" 
+                    disabled={isSubmitting}
+                    className="w-full gap-2"
+                  >
+                    <Mail className="h-4 w-4" />
+                    {isSubmitting ? 'Sending...' : 'Email Me My Matches'}
+                  </Button>
+                </form>
+
+                <div className="mt-6 pt-6 border-t border-border text-center">
+                  <p className="text-sm text-muted-foreground mb-3">Or share with friends:</p>
+                  <Button onClick={handleShare} variant="outline" className="gap-2">
+                    <Share2 className="h-4 w-4" />
+                    Share Results
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-4">
+                <div className="text-4xl mb-2">✅</div>
+                <h3 className="font-bold mb-2">Success!</h3>
+                <p className="text-muted-foreground">
+                  Check your inbox for your personalized project matches!
+                </p>
+              </div>
+            )}
           </div>
         )}
 
