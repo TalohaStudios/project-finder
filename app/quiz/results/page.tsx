@@ -14,8 +14,8 @@ type Project = {
   machines_required: string[]
   is_stash_buster: boolean
   image_url?: string
-  accuquilt_pattern_url?: string
-  notion_instructions_url?: string
+  accuquilt_pattern_link?: string
+  notion_instructions_link?: string
 }
 
 type CrafterType = {
@@ -264,24 +264,24 @@ function ResultsPage() {
                     </div>
 
                     <div className="flex gap-2">
-                      {project.accuquilt_pattern_url && (
+                      {project.accuquilt_pattern_link && (
                         <Button
                           asChild
                           variant="default"
                           size="sm"
                         >
-                          <a href={project.accuquilt_pattern_url} target="_blank" rel="noopener noreferrer">
+                        <a href={project.accuquilt_pattern_link} target="_blank" rel="noopener noreferrer">
                             View Pattern
                           </a>
                         </Button>
                       )}
-                      {project.notion_instructions_url && (
+                      {project.notion_instructions_link && (
                         <Button
                           asChild
                           variant="outline"
                           size="sm"
                         >
-                          <a href={project.notion_instructions_url} target="_blank" rel="noopener noreferrer">
+                        <a href={project.notion_instructions_link} target="_blank" rel="noopener noreferrer">
                             Instructions
                           </a>
                         </Button>
