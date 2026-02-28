@@ -114,30 +114,51 @@ function ResultsPage() {
     setIsSubmitting(true)
 
     try {
-      // Determine tags based on answers
+      // Step 1: Save results and get unique URL
+      const saveResponse = await fetch('/api/save-results', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          firstName,
+          quizAnswers: JSON.parse(searchParams.get('answers') || '{}'),
+          matchedProjects: projects,
+          crafterType: crafterType
+        })
+      })
+
+      if (!saveResponse.ok) {
+        alert('Failed to save results. Please try again.')
+        setIsSubmitting(false)
+        return
+      }
+
+      const { resultsUrl } = await saveResponse.json()
+
+      // Step 2: Subscribe to Kit with results URL
       const tags = []
       if (crafterType) {
         const typeTag = crafterType.title.toLowerCase().replace(/\s+/g, '-')
         tags.push(typeTag)
       }
 
-      const response = await fetch('/api/kit/subscribe', {
+      const kitResponse = await fetch('/api/kit/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
           firstName,
           tags,
-          answers: searchParams.get('answers')
+          resultsUrl // Pass the unique URL to Kit
         })
       })
 
-      if (response.ok) {
+      if (kitResponse.ok) {
         setEmailSuccess(true)
         setEmail('')
         setFirstName('')
       } else {
-        alert('Failed to save email. Please try again.')
+        alert('Failed to subscribe. Please try again.')
       }
     } catch (error) {
       console.error('Email submit error:', error)

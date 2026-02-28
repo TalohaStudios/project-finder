@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { email, firstName, tags } = body
+    const { email, firstName, tags, resultsUrl } = body
 
     const KIT_API_KEY = process.env.NEXT_PUBLIC_KIT_API_KEY
     
@@ -24,6 +24,9 @@ export async function POST(request: Request) {
         api_key: KIT_API_KEY,
         email: email,
         first_name: firstName || '',
+        fields: {
+          results_url: resultsUrl || ''
+        }
       }),
     })
 
