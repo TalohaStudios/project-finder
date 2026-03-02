@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Share2, Mail, ArrowLeft } from 'lucide-react'
+import { trackEvent } from '@/app/lib/analytics'
 
 type Project = {
   id: number
@@ -44,7 +45,7 @@ function ResultsPage() {
       return
     }
 
-    try {
+  try {
       const answers = JSON.parse(decodeURIComponent(answersParam))
       
       // Determine crafter type based on answers
@@ -56,6 +57,12 @@ function ResultsPage() {
       if (projectsParam) {
         const matchedProjects = JSON.parse(decodeURIComponent(projectsParam))
         setProjects(matchedProjects)
+        
+        // Track quiz completion
+        trackEvent('quiz_completed', {
+          crafterType: type.title,
+          projectCount: matchedProjects.length
+        })
       }
 
       setIsLoading(false)
@@ -152,9 +159,14 @@ function ResultsPage() {
           resultsUrl // Pass the unique URL to Kit
         })
       })
-
-      if (kitResponse.ok) {
+if (kitResponse.ok) {
         setEmailSuccess(true)
+        
+        // Track email capture
+        trackEvent('email_captured', {
+          crafterType: crafterType?.title
+        })
+        
         setEmail('')
         setFirstName('')
       } else {
